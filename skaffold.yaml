@@ -5,12 +5,10 @@ deploy:
     manifests:
       - ./infra/k8s/*
 build:
-  # local:
-  #   push: false
-  googleCloudBuild:
-    projectId: ticketing-dev-310016
+  local:
+    push: false
   artifacts:
-    - image: us.gcr.io/ticketing-dev-310016/auth
+    - image: johnneychen/auth
       context: auth
       docker:
         dockerfile: Dockerfile
@@ -18,7 +16,7 @@ build:
         manual:
           - src: "src/**/*.ts"
             dest: .
-    - image: us.gcr.io/ticketing-dev-310016/client
+    - image: johnneychen/client
       context: client
       docker:
         dockerfile: Dockerfile
