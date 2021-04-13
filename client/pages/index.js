@@ -1,13 +1,18 @@
-import axios from "axios";
+import buildClient from "../api/buildClient";
 
-const LandingPage = () => {
-  return <h1>Landing page</h1>;
+const LandingPage = ({ currentUser }) => {
+  const isAuthenticated = currentUser
+    ? `You are logged in with email ${currentUser.email}`
+    : "You are not logged in";
+  return <h1>{isAuthenticated}</h1>;
 };
 
-LandingPage.getInitialProps = async () => {
-  const response = await axios.get("ticketing.dev/api/users/currentuser");
+LandingPage.getInitialProps = async (context) => {
+  const client = buildClient(context);
 
-  return response.data;
+  const { data } = await client.get("/api/users/currentuser");
+
+  return data;
 };
 
 export default LandingPage;
