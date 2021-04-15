@@ -18,8 +18,6 @@ const Header = ({ currentUser }) => {
       );
     });
 
-  console.log(links.filter((linkConfig) => linkConfig));
-
   return (
     <nav className="navbar navbar-light bg-light">
       <Link href="/">

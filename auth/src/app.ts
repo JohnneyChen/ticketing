@@ -7,8 +7,7 @@ import { currentUserRouter } from "./routes/currentUser";
 import { signoutRouter } from "./routes/signout";
 import { signinRouter } from "./routes/signin";
 import { signupRouter } from "./routes/signup";
-import { errorHandler } from "@johnneychentix/common";
-import { NotFoundError } from "@johnneychentix/common";
+import { errorHandler, NotFoundError } from "@johnneychentix/common";
 
 const app = express();
 

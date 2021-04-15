@@ -53,9 +53,4 @@ userSchema.pre("save", async function (done) {
 
 const User = mongoose.model<UserDoc, UserModel>("User", userSchema);
 
-const newUser = User.build({
-  email: "test@test.com",
-  password: "123123",
-});
-
 export { User };
