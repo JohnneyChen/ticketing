@@ -12,6 +12,8 @@ declare global {
 
 let mongo: any;
 
+jest.mock("../NatsWrapper");
+
 beforeAll(async () => {
   process.env.JWT_KEY = "asdf";
   process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
@@ -26,6 +28,7 @@ beforeAll(async () => {
 });
 
 beforeEach(async () => {
+  jest.clearAllMocks();
   const collections = await mongoose.connection.db.collections();
 
   collections.forEach(async (collection) => {

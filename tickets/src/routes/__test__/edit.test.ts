@@ -1,7 +1,9 @@
 import request from "supertest";
-import { app } from "../../app";
 import mongoose from "mongoose";
+
 import { Ticket } from "../../models/Ticket";
+import { app } from "../../app";
+import { natsWrapper } from "../../NatsWrapper";
 
 it("401 if unauthorized route access", async () => {
   const id = mongoose.Types.ObjectId().toHexString();
@@ -91,4 +93,21 @@ it("200 if valid request parameters and valid userId edit on existing ticket", a
 
   expect(getResponse.body.title).toEqual("music concert");
   expect(getResponse.body.price).toEqual(50);
+});
+
+it("published event after successful ticket edited", async () => {
+  const userId = "6076381c4e3b30c0fad4ce39";
+
+  const ticket = Ticket.build({ title: "Concert", price: 20, userId });
+  await ticket.save();
+
+  const authToken = global.signin();
+
+  const { body } = await request(app)
+    .put(`/api/tickets/${ticket.id}`)
+    .send({ title: "music concert", price: "50" })
+    .set("Cookie", authToken)
+    .expect(200);
+
+  expect(natsWrapper.client.publish).toHaveBeenCalled();
 });
