@@ -54,4 +54,4 @@ router.put(
   }
 );
 
-export { router as editRouter };
+export { router as editTicketRouter };

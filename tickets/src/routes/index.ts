@@ -10,4 +10,4 @@ router.get("/api/tickets/", async (req: Request, res: Response) => {
   res.send(tickets || []);
 });
 
-export { router as listRouter };
+export { router as listTicketsRouter };

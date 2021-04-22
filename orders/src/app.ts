@@ -8,10 +8,10 @@ import {
   NotFoundError,
 } from "@johnneychentix/common";
 
-import { newTicketRouter } from "./routes/new";
-import { showTicketRouter } from "./routes/show";
-import { editTicketRouter } from "./routes/edit";
-import { listTicketsRouter } from "./routes/index";
+import { newOrderRouter } from "./routes/new";
+import { showOrderRouter } from "./routes/show";
+import { deleteOrderRouter } from "./routes/delete";
+import { listOrdersRouter } from "./routes/index";
 
 const app = express();
 
@@ -23,10 +23,10 @@ app.use(
 );
 app.use(currentUser);
 
-app.use(listTicketsRouter);
-app.use(showTicketRouter);
-app.use(newTicketRouter);
-app.use(editTicketRouter);
+app.use(listOrdersRouter);
+app.use(showOrderRouter);
+app.use(newOrderRouter);
+app.use(deleteOrderRouter);
 
 app.all("*", async () => {
   throw new NotFoundError();
