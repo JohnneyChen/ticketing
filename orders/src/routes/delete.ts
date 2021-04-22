@@ -3,6 +3,7 @@ import {
   requireAuth,
   NotFoundError,
   NotAuthorizedError,
+  OrderStatus,
 } from "@johnneychentix/common";
 
 import { Order } from "../models/Order";
@@ -25,9 +26,11 @@ router.delete(
       throw new NotAuthorizedError();
     }
 
-    await order.delete();
+    order.status = OrderStatus.Cancelled;
 
-    res.send({});
+    await order.save();
+
+    res.status(204).send(order);
   }
 );
 

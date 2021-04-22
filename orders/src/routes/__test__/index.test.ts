@@ -16,6 +16,7 @@ it("401 on unauthorized access", async () => {
 it("200 and returns correct orders on authorized access", async () => {
   const webtoken = global.signin();
   const userId = "6076381c4e3b30c0fad4ce39";
+  const userTwo = mongoose.Types.ObjectId().toHexString();
 
   await request(app)
     .get("/api/orders")
@@ -40,6 +41,13 @@ it("200 and returns correct orders on authorized access", async () => {
 
   await ticketTwo.save();
 
+  const ticketThree = Ticket.build({
+    title: "baseball",
+    price: 500,
+  });
+
+  await ticketThree.save();
+
   const order = Order.build({
     userId,
     ticket,
@@ -58,6 +66,13 @@ it("200 and returns correct orders on authorized access", async () => {
 
   await orderTwo.save();
 
+  const orderThree = Order.build({
+    ticket: ticketThree,
+    userId: userTwo,
+    status: OrderStatus.Created,
+    expiresAt: expiration,
+  });
+
   const response = await request(app)
     .get("/api/orders")
     .set("Cookie", webtoken)
@@ -65,4 +80,6 @@ it("200 and returns correct orders on authorized access", async () => {
     .expect(200);
 
   expect(response.body.length).toEqual(2);
+  expect(response.body[0].id).toEqual(order.id);
+  expect(response.body[1].id).toEqual(orderTwo.id);
 });

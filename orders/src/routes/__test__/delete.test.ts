@@ -60,7 +60,7 @@ it("401 on unauthorized access of existing order", async () => {
   );
 });
 
-it("200 and deletes order on authorized access", async () => {
+it("204 and changes order to cancelled on authorized access", async () => {
   const jwt = global.signin();
   const userId = "6076381c4e3b30c0fad4ce39";
   const expiration = new Date();
@@ -86,8 +86,9 @@ it("200 and deletes order on authorized access", async () => {
     .delete(`/api/orders/${order.id}`)
     .set("Cookie", jwt)
     .send()
-    .expect(200);
+    .expect(204);
 
-  const orders = await Order.find({});
-  expect(orders.length).toEqual(0);
+  const changedOrder = await Order.findById(order.id);
+
+  expect(changedOrder!.status).toEqual(OrderStatus.Cancelled);
 });
