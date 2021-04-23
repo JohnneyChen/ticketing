@@ -30,6 +30,7 @@ it("200 and returns correct orders on authorized access", async () => {
   const ticket = Ticket.build({
     title: "concert",
     price: 100,
+    _id: mongoose.Types.ObjectId().toHexString(),
   });
 
   await ticket.save();
@@ -37,6 +38,7 @@ it("200 and returns correct orders on authorized access", async () => {
   const ticketTwo = Ticket.build({
     title: "movie",
     price: 10,
+    _id: mongoose.Types.ObjectId().toHexString(),
   });
 
   await ticketTwo.save();
@@ -44,6 +46,7 @@ it("200 and returns correct orders on authorized access", async () => {
   const ticketThree = Ticket.build({
     title: "baseball",
     price: 500,
+    _id: mongoose.Types.ObjectId().toHexString(),
   });
 
   await ticketThree.save();

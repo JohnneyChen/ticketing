@@ -6,6 +6,7 @@ import {
   validateRequest,
   NotAuthorizedError,
   NotFoundError,
+  BadRequestError,
 } from "@johnneychentix/common";
 
 import { Ticket } from "../models/Ticket";
@@ -36,6 +37,10 @@ router.put(
       throw new NotFoundError();
     }
 
+    if (ticket.orderId) {
+      throw new BadRequestError("Cannot edit reserved ticket");
+    }
+
     if (ticket.userId !== currentUserId) {
       throw new NotAuthorizedError();
     }
@@ -45,6 +50,7 @@ router.put(
     await ticket.save();
     await new TicketEditedPublisher(natsWrapper.client).publish({
       id: ticket.id,
+      version: ticket.version,
       title: ticket.title,
       price: ticket.price,
       userId: ticket.userId,

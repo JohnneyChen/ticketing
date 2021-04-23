@@ -111,3 +111,23 @@ it("published event after successful ticket edited", async () => {
 
   expect(natsWrapper.client.publish).toHaveBeenCalled();
 });
+
+it("400 after edit on reserved ticket", async () => {
+  const userId = "6076381c4e3b30c0fad4ce39";
+
+  const ticket = Ticket.build({ title: "Concert", price: 20, userId });
+  await ticket.save();
+
+  ticket.set({ orderId: mongoose.Types.ObjectId().toHexString() });
+  await ticket.save();
+
+  const authToken = global.signin();
+
+  const { body } = await request(app)
+    .put(`/api/tickets/${ticket.id}`)
+    .send({ title: "music concert", price: "50" })
+    .set("Cookie", authToken)
+    .expect(400);
+
+  expect(body.errors[0].message).toEqual("Cannot edit reserved ticket");
+});

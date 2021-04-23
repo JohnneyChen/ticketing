@@ -4,9 +4,12 @@ import mongoose from "mongoose";
 import { app } from "../../app";
 import { Ticket } from "../../models/Ticket";
 import { Order, OrderStatus } from "../../models/Order";
+import { natsWrapper } from "../../NatsWrapper";
 
 it("401 on post without authenticated user", async () => {
   await request(app).post("/api/orders").send({}).expect(401);
+
+  expect(natsWrapper.client.publish).not.toHaveBeenCalled();
 });
 
 it("400 on post without ticketId", async () => {
@@ -20,6 +23,8 @@ it("400 on post without ticketId", async () => {
 
   expect(response.body.errors[0].field).toEqual("ticketId");
   expect(response.body.errors[0].message).toEqual("A ticketId is required");
+
+  expect(natsWrapper.client.publish).not.toHaveBeenCalled();
 });
 
 it("404 when ticket posted does not exist", async () => {
@@ -31,6 +36,8 @@ it("404 when ticket posted does not exist", async () => {
     .set("Cookie", jwt)
     .send({ ticketId })
     .expect(404);
+
+  expect(natsWrapper.client.publish).not.toHaveBeenCalled();
 });
 
 it("400 when order request on reserved ticket", async () => {
@@ -43,6 +50,7 @@ it("400 when order request on reserved ticket", async () => {
   const ticket = Ticket.build({
     title: "concert",
     price: 100,
+    _id: mongoose.Types.ObjectId().toHexString(),
   });
 
   await ticket.save();
@@ -63,6 +71,8 @@ it("400 when order request on reserved ticket", async () => {
     .expect(400);
 
   expect(response.body.errors[0].message).toEqual("Ticket is already reserved");
+
+  expect(natsWrapper.client.publish).not.toHaveBeenCalled();
 });
 
 it("201 and order creation on valid post", async () => {
@@ -74,6 +84,7 @@ it("201 and order creation on valid post", async () => {
   const ticket = Ticket.build({
     title: "concert",
     price: 100,
+    _id: mongoose.Types.ObjectId().toHexString(),
   });
 
   await ticket.save();
@@ -85,4 +96,25 @@ it("201 and order creation on valid post", async () => {
     .expect(201);
 });
 
-// it("sends orders:created event on successful request", async () => {});
+it("sends orders:created event on successful request", async () => {
+  const jwt = global.signin();
+
+  const expiration = new Date();
+  expiration.setSeconds(expiration.getSeconds() + 60 * 15);
+
+  const ticket = Ticket.build({
+    title: "concert",
+    price: 100,
+    _id: mongoose.Types.ObjectId().toHexString(),
+  });
+
+  await ticket.save();
+
+  const response = await request(app)
+    .post("/api/orders")
+    .set("Cookie", jwt)
+    .send({ ticketId: ticket.id })
+    .expect(201);
+
+  expect(natsWrapper.client.publish).toHaveBeenCalled();
+});

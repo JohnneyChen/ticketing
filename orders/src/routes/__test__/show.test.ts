@@ -33,6 +33,7 @@ it("401 on unauthorized access of existing order", async () => {
   const ticket = Ticket.build({
     title: "Concert",
     price: 100,
+    _id: mongoose.Types.ObjectId().toHexString(),
   });
 
   await ticket.save();
@@ -66,6 +67,7 @@ it("200 and returns correct order on authorized access", async () => {
   const ticket = Ticket.build({
     title: "Concert",
     price: 100,
+    _id: mongoose.Types.ObjectId().toHexString(),
   });
 
   await ticket.save();
