@@ -7,12 +7,8 @@ const LandingPage = ({ currentUser }) => {
   return <h1>{isAuthenticated}</h1>;
 };
 
-LandingPage.getInitialProps = async (context) => {
-  const client = buildClient(context);
-
-  const { data } = await client.get("/api/users/currentuser");
-
-  return data;
+LandingPage.getInitialProps = async (context, client, currentUser) => {
+  return {};
 };
 
 export default LandingPage;
