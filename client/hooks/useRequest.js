@@ -5,11 +5,11 @@ const useRequest = ({ url, method, body, onSuccess }) => {
   const [errors, setErrors] = useState([]);
   const [generalError, setGeneralError] = useState(null);
 
-  const doRequest = async () => {
+  const doRequest = async (props = {}) => {
     setErrors([]);
     setGeneralError(null);
     try {
-      const response = await axios[method](url, body);
+      const response = await axios[method](url, { ...body, ...props });
       if (onSuccess) {
         onSuccess(response.data);
       }
@@ -17,7 +17,11 @@ const useRequest = ({ url, method, body, onSuccess }) => {
       const requestErrors = err.response.data.errors;
 
       setErrors(requestErrors);
-      if (requestErrors.length === 1 && !requestErrors[0].field) {
+      if (
+        requestErrors &&
+        requestErrors.length === 1 &&
+        !requestErrors[0].field
+      ) {
         setGeneralError(
           <div className="alert alert-danger">{requestErrors[0].message}</div>
         );
